@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { motion } from "framer-motion";
@@ -5,7 +6,8 @@ import React, { useState } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import axios from "axios";
-import GaugeChart from "react-gauge-chart"; // Importing the GaugeChart
+//@ts-expect-error
+import GaugeChart from "react-gauge-chart";
 
 function Calculate() {
   const placeholders = [
@@ -45,12 +47,14 @@ function Calculate() {
     } catch (error) {
       console.error(
         "Error fetching GitHub data:",
+        //@ts-expect-error
         error.response?.data?.message
       );
     }
   }
 
   // Mock scoring algorithm
+  //@ts-expect-error
   function calculateScore(userData, reposData): number {
     let score = userData.followers * 10;
     score += reposData.length * 20;
