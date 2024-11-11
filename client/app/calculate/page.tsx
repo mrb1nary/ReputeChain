@@ -2,92 +2,117 @@
 "use client";
 
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import axios from "axios";
-//@ts-expect-error
-import GaugeChart from "react-gauge-chart";
 
 function Calculate() {
-  const placeholders = [
-    "Enter your Github Username",
-    "mrb1nary",
-    "jason027",
-    "CodeMaster",
-    "rustgod",
-  ];
-
   const [score, setScore] = useState<number | null>(null); // State to store the fetched score
-  const [username, setUsername] = useState<string>(""); // State to store the input value
+  const [username, setUsername] = useState<string>(""); // State to store the GitHub username
 
-  // Function to fetch GitHub score based on username
-  async function fetchGitHubUserScore(username: string) {
-    const token = process.env.NEXT_PUBLIC_GITHUB_API_KEY;
-
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "User-Agent": "axios",
-    };
-
-    try {
-      const userResponse = await axios.get(
-        `https://api.github.com/users/${username}`,
-        { headers }
-      );
-
-      const repoResponse = await axios.get(
-        `https://api.github.com/users/${username}/repos`,
-        { headers }
-      );
-
-      const userScore = calculateScore(userResponse.data, repoResponse.data);
-      setScore(userScore); // Update score state
-      console.log("User Score:", userScore); // Log score in main component
-    } catch (error) {
-      console.error(
-        "Error fetching GitHub data:",
-        //@ts-expect-error
-        error.response?.data?.message
-      );
-    }
-  }
-
-  // Mock scoring algorithm
+  // Function to calculate score
   //@ts-expect-error
-  function calculateScore(userData, reposData): number {
-    let score = userData.followers * 10;
-    score += reposData.length * 20;
-    return Math.min(score, 1000);
-  }
+  function calculateScore(
+    userData: any,
+    reposData: any[],
+    additionalData: { rejectedPRCount: number }
+  ): number {
+    const followers = userData.followers || 0;
+    const publicRepos = userData.public_repos || 0;
+    const repoStars = reposData.reduce(
+      (acc, repo) => acc + (repo.stargazers_count || 0),
+      0
+    );
+    const rejectedPRs = additionalData.rejectedPRCount || 0;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(e.target.value); // Update username state on change
-  };
+    console.log("Followers:", followers);
+    console.log("Public Repos:", publicRepos);
+    console.log("Repo Stars:", repoStars);
+    console.log("Rejected PRs:", rejectedPRs);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    let score =
+      followers * 10 + publicRepos * 5 + repoStars * 2 - rejectedPRs * 10;
 
-    // Check if the username contains a GitHub URL
-    const githubUrlRegex = /https:\/\/github\.com\/([a-zA-Z0-9-]+)/;
-    let extractedUsername = username;
-
-    // If the username matches the GitHub URL format
-    const match = username.match(githubUrlRegex);
-    if (match && match[1]) {
-      extractedUsername = match[1]; // Extract the username from the URL
+    // Apply diminishing returns effect for scores over 500
+    if (score > 500) {
+      score = 500 + (score - 500) * 0.5; // Reduces the value by 50% for points above 500
     }
 
-    console.log(extractedUsername); // Log the username (whether from URL or direct input)
+    return Math.min(score, 1000); // Cap score at 1000
+  }
 
-    fetchGitHubUserScore(extractedUsername); // Trigger fetchGitHubUserScore with the username
-  };
 
-  // Function to convert score to percentage (0 to 1 range)
-  const getGaugePercentage = (score: number | null) => {
-    if (score === null) return 0;
-    return score / 1000;
-  };
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("github_access_token"); // Get the access token from localStorage
+
+    if (accessToken) {
+      let fetchedUserData: any; // To hold the user profile data
+      let fetchedReposData: any[] = []; // To hold the repository data
+      let rejectedPRCount = 0; // To hold the count of rejected PRs
+
+      // Fetch the GitHub user profile using the access token
+      fetch("https://api.github.com/user", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((userData) => {
+          fetchedUserData = userData; // Store user profile data
+          if (userData.login) {
+            setUsername(userData.login); // Set the username
+
+            // Fetch user repositories
+            return fetch(
+              `https://api.github.com/users/${userData.login}/repos`,
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              }
+            );
+          } else {
+            throw new Error("Failed to fetch GitHub user profile data");
+          }
+        })
+        .then((repoResponse) => repoResponse.json())
+        .then((reposData) => {
+          fetchedReposData = reposData; // Store repositories data
+
+          // For each repository, fetch pull requests and check for rejected PRs
+          const repoPromises = reposData.map((repo) =>
+            fetch(
+              `https://api.github.com/repos/${fetchedUserData.login}/${repo.name}/pulls?state=closed`,
+              {
+                headers: { Authorization: `Bearer ${accessToken}` },
+              }
+            )
+              .then((res) => res.json())
+              .then((prs) => {
+                // Count PRs that were closed without merging (rejected)
+                const rejectedPRs = prs.filter((pr) => pr.merged_at === null);
+                rejectedPRCount += rejectedPRs.length;
+              })
+          );
+
+          // Wait for all PR data fetches to complete
+          return Promise.all(repoPromises);
+        })
+        .then(() => {
+          // Calculate and set the score with the collected data
+          const userScore = calculateScore(fetchedUserData, fetchedReposData, {
+            rejectedPRCount,
+          });
+          setScore(userScore);
+        })
+        .catch((error) => {
+          console.error("Error fetching GitHub data:", error);
+        });
+    } else {
+      console.error("No access token found in localStorage");
+    }
+  }, []);
+
 
   return (
     <AuroraBackground>
@@ -104,27 +129,15 @@ function Calculate() {
         <div className="text-3xl md:text-7xl font-bold text-white text-center">
           Calculating Your Score!
         </div>
-        <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4"></div>
-        <PlaceholdersAndVanishInput
-          placeholders={placeholders}
-          onChange={handleChange}
-          onSubmit={onSubmit} // Pass the submit handler
-        />
+        <div className="font-extralight text-base md:text-4xl text-neutral-200 py-4">
+          {`GitHub Username: ${username}`}
+        </div>
       </motion.div>
+
 
       {score !== null && (
         <div className="mt-4 text-xl font-semibold text-white">
           <div className="text-center mb-4">User Score: {score}</div>
-
-          <GaugeChart
-            id="gauge-chart1"
-            nrOfLevels={30}
-            arcsLength={[0.1, 0.2, 0.2, 0.2, 0.2]} // Percentage segments for different levels
-            colors={["#FF5F6D", "#FF9F00", "#FFCC00", "#7FFF00", "#32CD32"]} // Colors for each segment
-            percent={getGaugePercentage(score)} // Calculate percentage based on score
-            arcWidth={0.3} // Width of the gauge arcs
-            animate={true} // Animation for score change
-          />
         </div>
       )}
     </AuroraBackground>

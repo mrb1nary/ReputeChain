@@ -27,11 +27,15 @@ function Profile() {
           if (data.avatar_url) {
             setAvatarUrl(data.avatar_url);
           }
+          if (data.accessToken) {
+            localStorage.setItem("github_access_token", data.accessToken); //not working
+          }
           if (data.username) {
             setUsername(data.username); // Set the username
           } else {
             console.error("Failed to fetch GitHub profile data");
           }
+          localStorage.setItem("github_code", code);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);

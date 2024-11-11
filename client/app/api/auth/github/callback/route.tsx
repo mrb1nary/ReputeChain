@@ -55,6 +55,7 @@ export async function POST(request: Request) {
         avatar_url: profileData.avatar_url,
         username: profileData.login,
         name: profileData.name,
+        accessToken: accessToken,
       }),
       {
         headers: { "Access-Control-Allow-Origin": "*" },
