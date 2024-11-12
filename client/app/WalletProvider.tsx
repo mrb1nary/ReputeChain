@@ -10,7 +10,7 @@ import { clusterApiUrl } from "@solana/web3.js";
 
 // Default styles for wallet adapter
 import "@solana/wallet-adapter-react-ui/styles.css";
-import Save from "./save/page";
+
 
 export const useSolanaWallet = (
   network: WalletAdapterNetwork | "localnet" = "localnet"
@@ -35,7 +35,7 @@ export const useSolanaWallet = (
     return (
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider><Save/></WalletModalProvider>
+          <WalletModalProvider>{children}</WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
     );
