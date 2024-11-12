@@ -15,7 +15,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "ReputeChain",
-  description: "Decentralized reputation system built on the Solana blockchain, designed to measure and verify a user's contributions and credibility to the community",
+  description:
+    "Decentralized reputation system built on the Solana blockchain, designed to measure and verify a user's contributions and credibility to the community",
 };
 
 export default function RootLayout({
