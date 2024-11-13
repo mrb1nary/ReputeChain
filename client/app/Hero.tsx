@@ -1,10 +1,78 @@
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Spotlight } from "@/components/ui/spotlight";
-import React from "react";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import idl from "../../anchor/target/idl/anchor.json"; // Adjust the path if needed
+import { AnchorProvider, Program, web3 } from "@coral-xyz/anchor";
+import { Anchor } from "../../anchor/target/types/anchor";
+import React, { useState } from "react";
+import { useWallet, WalletContextState } from "@solana/wallet-adapter-react";
 
 function Hero() {
   const auth = async () => {
     window.location.href = "/api/auth/github";
   };
+
+  const [key, setKey] = useState("");
+  const [score, setScore] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const wallet = useWallet();
+  const opts: web3.ConnectionConfig = { commitment: "processed" };
+  const connection = new Connection(clusterApiUrl("devnet"), opts.commitment);
+
+  const programId = new PublicKey(
+    "8u2absR3zLEnTcsM542zjMNbeNzf1dpViq9FKPxAiFfd"
+  );
+
+  const placeholders = ["Already have a key? Enter it here"];
+
+  type SolanaWallet = WalletContextState & {
+    publicKey: PublicKey;
+    signTransaction(tx: web3.Transaction): Promise<web3.Transaction>;
+    signAllTransactions(txs: web3.Transaction[]): Promise<web3.Transaction[]>;
+  };
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setKey(e.target.value);
+  }
+
+  async function fetchDataFromSolana(key: string) {
+    const provider = new AnchorProvider(
+      connection,
+      wallet as SolanaWallet,
+      opts
+    );
+
+    // Instantiate the program
+    const program = new Program<Anchor>(idl as Anchor, provider);
+
+    // Generate the PDA
+    const [scoreAccountPDA] = await PublicKey.findProgramAddressSync(
+      [Buffer.from(key)],
+      programId
+    );
+    const account = await program.account.scoreAccount.fetch(scoreAccountPDA);
+    setScore(account.score);
+    setUsername(account.username);
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    console.log(key);
+    if (!key) {
+      setError("Please enter a key to fetch data.");
+      return;
+    }
+
+    try {
+      await fetchDataFromSolana(key);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch score:", err);
+      setError("Failed to fetch score. Ensure the key is correct.");
+    }
+  }
+
   return (
     <div className="min-h-screen w-full rounded-md flex flex-col md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
       <Spotlight
@@ -22,7 +90,7 @@ function Hero() {
           credibility to the community
         </p>
       </div>
-      <button className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-1 text-sm font-semibold leading-7 text-white inline-block mt-4">
+      <button className="bg-slate-800 mb-10 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-1 text-sm font-semibold leading-7 text-white inline-block mt-4">
         <span className="absolute inset-0 overflow-hidden rounded-full">
           <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
         </span>
@@ -46,6 +114,22 @@ function Hero() {
         </div>
         <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40"></span>
       </button>
+      <div>
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </div>
+      {username && (
+        <div className="text-white text-center mt-4">User: {username}</div>
+      )}
+      {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+      {score !== null && (
+        <div className="text-white text-center mt-4">
+          Score is: {score.toString()}
+        </div>
+      )}
     </div>
   );
 }

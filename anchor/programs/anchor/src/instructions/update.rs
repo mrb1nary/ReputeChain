@@ -1,10 +1,9 @@
 use anchor_lang::prelude::*;
 
-
 use crate::ScoreAccount;
 
 #[derive(Accounts)]
-#[instruction(key: String)]
+#[instruction(new_score:u64, key: String)]
 pub struct UpdateScore<'info> {
     #[account(mut, seeds = [key.as_bytes()], bump, has_one = authority)]
     pub score_account: Account<'info, ScoreAccount>,

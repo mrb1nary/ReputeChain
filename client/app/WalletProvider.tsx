@@ -11,18 +11,11 @@ import { clusterApiUrl } from "@solana/web3.js";
 // Default styles for wallet adapter
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-
 export const useSolanaWallet = (
-  network: WalletAdapterNetwork | "localnet" = "localnet"
+  network: WalletAdapterNetwork = WalletAdapterNetwork.Devnet
 ) => {
-  // Set the network, using localnet if specified
-  const endpoint = useMemo(() => {
-    if (network === "localnet") {
-      return "http://127.0.0.1:8899"; // Localnet endpoint
-    } else {
-      return clusterApiUrl(network); // Other networks (Devnet, Testnet, Mainnet)
-    }
-  }, [network]);
+  // Set the network, using devnet as default
+  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 

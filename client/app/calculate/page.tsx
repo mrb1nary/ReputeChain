@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { useRouter } from "next/navigation";
+import Navbar from "../Navbar";
 
 function Calculate() {
   const [score, setScore] = useState<number | null>(null);
@@ -176,161 +177,161 @@ function Calculate() {
           title: "Total Commits",
           description: `${githubStats.totalCommits}`,
           link: "",
-          key: "commits",
         },
         {
           title: "Total Watchers",
           description: `${githubStats.watchersCount}`,
           link: "",
-          key: "watchers",
         },
         {
           title: "Total Forks",
           description: `${githubStats.forksCount}`,
           link: "",
-          key: "forks",
         },
         {
           title: "Rejected PRs",
           description: `${githubStats.rejectedPRCount}`,
           link: "",
-          key: "prs",
         },
         {
           title: "Account Age",
           description: `${githubStats.accountAge} years`,
           link: "",
-          key: "age",
         },
       ]
     : [];
 
   return (
-    <AuroraBackground className="h-full">
-      <motion.div
-        initial={{ opacity: 0.0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 0.3,
-          duration: 0.8,
-          ease: "easeInOut",
-        }}
-        className="relative flex flex-col gap-6 items-center justify-center px-4 py-8 md:py-12"
-      >
-        <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center">
-          Calculating Your Score!
-        </div>
-        <div className="font-extralight text-sm sm:text-lg md:text-xl text-neutral-200 py-4">
-          {`GitHub Username: ${username}`}
-        </div>
-      </motion.div>
-
-      {score !== null && (
-        <div className="mt-6 text-xl md:text-2xl font-semibold text-white text-center">
-          User Score: {score}
-        </div>
-      )}
-
-      {githubStats && (
-        <div className="mt-8">
-          <HoverEffect
-            className="flex flex-wrap justify-center gap-6"
-            items={hoverEffectItems}
-          />
-        </div>
-      )}
-
-      <div>
-        <button
-          onClick={() => router.push("/save")}
-          className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-md font-semibold leading-6  text-white inline-block"
+    <>
+      <AuroraBackground className="h-full">
+        <motion.div
+          initial={{ opacity: 0.0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="relative flex flex-col gap-6 items-center justify-center px-4 py-8 md:py-12"
         >
-          <span className="absolute inset-0 overflow-hidden rounded-full">
-            <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
-          </span>
-          <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-            <span>{`Save Score to Blockchain`}</span>
-            <svg
-              width="40"
-              height="30"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.5"
-                d="M10.75 8.75L14.25 12L10.75 15.25"
-              ></path>
-            </svg>
+          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center">
+            Calculating Your Score!
           </div>
-          <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40"></span>
-        </button>
-      </div>
+          <div className="font-extralight text-sm sm:text-lg md:text-xl text-neutral-200 py-4">
+            {`GitHub Username: ${username}`}
+          </div>
+        </motion.div>
 
-      <div className="text-3xl sm:text-4xl md:text-5xl font-bold mt-[200px] mb-[200px] text-white text-center">
-        <h3>✨ Score Calculation Recipe ✨</h3>
-        <div className="text-base sm:text-lg md:text-xl font-light mt-6 max-w-2xl mx-auto text-neutral-200 text-left space-y-6">
-          <p className="pb-4">
-            The score is calculated based on various factors that reflect your
-            GitHub contributions and reputation. Here’s how each factor
-            contributes to your overall score:
-          </p>
-          <ul className="list-disc list-inside space-y-2">
-            <li>
-              <strong>👥 Followers:</strong> Each follower contributes{" "}
-              <span className="font-semibold">10 points</span>. This reflects
-              your reach and influence.
-            </li>
-            <li>
-              <strong>📂 Public Repositories:</strong> Each public repository
-              adds <span className="font-semibold">5 points</span>, representing
-              your initiative in sharing code and projects.
-            </li>
-            <li>
-              <strong>⭐ Stars:</strong> Every star on your repositories adds{" "}
-              <span className="font-semibold">2 points</span>, showcasing the
-              popularity of your projects.
-            </li>
-            <li>
-              <strong>📈 Total Commits:</strong> Each commit adds{" "}
-              <span className="font-semibold">2 points</span>, rewarding your
-              overall code contributions.
-            </li>
-            <li>
-              <strong>🍴 Forks:</strong> Each fork adds{" "}
-              <span className="font-semibold">1 point</span>, indicating your
-              project’s utility and community engagement.
-            </li>
-            <li>
-              <strong>👀 Watchers:</strong> Each watcher on your repositories
-              contributes <span className="font-semibold">1 point</span>,
-              reflecting user interest in your work.
-            </li>
-            <li>
-              <strong>⏳ Account Age:</strong> Every year on GitHub adds up to{" "}
-              <span className="font-semibold">5 points</span> (up to a maximum
-              of <span className="font-semibold">50 points</span>), rewarding
-              long-term commitment.
-            </li>
-            <li>
-              <strong>❌ Rejected Pull Requests:</strong> Each rejected PR
-              deducts <span className="font-semibold">10 points</span> from the
-              score, emphasizing the importance of high-quality contributions.
-            </li>
-          </ul>
-          <p className="pt-4">
-            <strong>📊 Score Cap:</strong> The score has a soft cap of{" "}
-            <span className="font-semibold">500 points</span>, after which
-            additional points are halved to prevent excessive accumulation. The
-            maximum score possible is{" "}
-            <span className="font-semibold">1000 points</span>.
-          </p>
+        {score !== null && (
+          <div className="mt-6 text-xl md:text-2xl font-semibold text-white text-center">
+            User Score: {score}
+          </div>
+        )}
+
+        {githubStats && (
+          <div className="mt-8">
+            <HoverEffect
+              className="flex flex-wrap justify-center gap-6"
+              items={hoverEffectItems}
+              key={hoverEffectItems.map((item) => item.key).join("")}
+            />
+          </div>
+        )}
+
+        <div>
+          <button
+            onClick={() => router.push("/save")}
+            className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-md font-semibold leading-6  text-white inline-block"
+          >
+            <span className="absolute inset-0 overflow-hidden rounded-full">
+              <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+            </span>
+            <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+              <span>{`Save Score to Blockchain`}</span>
+              <svg
+                width="40"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M10.75 8.75L14.25 12L10.75 15.25"
+                ></path>
+              </svg>
+            </div>
+            <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40"></span>
+          </button>
         </div>
-      </div>
-    </AuroraBackground>
+
+        <div className="text-3xl sm:text-4xl md:text-5xl font-bold mt-[200px] mb-[200px] text-white text-center">
+          <h3>✨ Score Calculation Recipe ✨</h3>
+          <div className="text-base sm:text-lg md:text-xl font-light mt-6 max-w-2xl mx-auto text-neutral-200 text-left space-y-6">
+            <p className="pb-4">
+              The score is calculated based on various factors that reflect your
+              GitHub contributions and reputation. Here’s how each factor
+              contributes to your overall score:
+            </p>
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>👥 Followers:</strong> Each follower contributes{" "}
+                <span className="font-semibold">10 points</span>. This reflects
+                your reach and influence.
+              </li>
+              <li>
+                <strong>📂 Public Repositories:</strong> Each public repository
+                adds <span className="font-semibold">5 points</span>,
+                representing your initiative in sharing code and projects.
+              </li>
+              <li>
+                <strong>⭐ Stars:</strong> Every star on your repositories adds{" "}
+                <span className="font-semibold">2 points</span>, showcasing the
+                popularity of your projects.
+              </li>
+              <li>
+                <strong>📈 Total Commits:</strong> Each commit adds{" "}
+                <span className="font-semibold">2 points</span>, rewarding your
+                overall code contributions.
+              </li>
+              <li>
+                <strong>🍴 Forks:</strong> Each fork adds{" "}
+                <span className="font-semibold">1 point</span>, indicating your
+                project’s utility and community engagement.
+              </li>
+              <li>
+                <strong>👀 Watchers:</strong> Each watcher on your repositories
+                contributes <span className="font-semibold">1 point</span>,
+                reflecting user interest in your work.
+              </li>
+              <li>
+                <strong>⏳ Account Age:</strong> Every year on GitHub adds up to{" "}
+                <span className="font-semibold">5 points</span> (up to a maximum
+                of <span className="font-semibold">50 points</span>), rewarding
+                long-term commitment.
+              </li>
+              <li>
+                <strong>❌ Rejected Pull Requests:</strong> Each rejected PR
+                deducts <span className="font-semibold">10 points</span> from
+                the score, emphasizing the importance of high-quality
+                contributions.
+              </li>
+            </ul>
+            <p className="pt-4">
+              <strong>📊 Score Cap:</strong> The score has a soft cap of{" "}
+              <span className="font-semibold">500 points</span>, after which
+              additional points are halved to prevent excessive accumulation.
+              The maximum score possible is{" "}
+              <span className="font-semibold">1000 points</span>.
+            </p>
+          </div>
+        </div>
+      </AuroraBackground>
+      <Navbar />
+    </>
   );
 }
 

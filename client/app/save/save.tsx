@@ -21,6 +21,8 @@ function Save() {
   const score = Number(localStorage.getItem("github_score")) || 100;
   const [secretKey, setSecretKey] = useState("");
   const programId = new PublicKey(idl.address);
+  const [error, setError] = useState<string | null>(null);
+  const [update, setUpdate] = useState(false);
 
   const placeholders = [
     "Enter your secret key",
@@ -31,14 +33,20 @@ function Save() {
   ];
 
   const wallet = useWallet();
-  const opts: web3.ConnectionConfig = { commitment: "processed" };
-  const connection = new Connection(clusterApiUrl("devnet"), opts.commitment);
 
   type SolanaWallet = WalletContextState & {
     publicKey: PublicKey;
     signTransaction(tx: web3.Transaction): Promise<web3.Transaction>;
     signAllTransactions(txs: web3.Transaction[]): Promise<web3.Transaction[]>;
   };
+  const opts: web3.ConnectionConfig = { commitment: "processed" };
+  const connection = new Connection(clusterApiUrl("devnet"), opts.commitment);
+  const provider = new AnchorProvider(connection, wallet as SolanaWallet, {
+    preflightCommitment: opts.commitment,
+    commitment: opts.commitment,
+  });
+
+  const program = new Program<Anchor>(idl as Anchor, provider);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSecretKey(e.target.value);
@@ -64,30 +72,60 @@ function Save() {
   const sendScoreToSolana = async (score: number, key: string) => {
     if (!connected) throw new Error("Wallet not connected");
 
-    const provider = new AnchorProvider(connection, wallet as SolanaWallet, {
-      preflightCommitment: opts.commitment,
-      commitment: opts.commitment,
-    });
-
-    const program = new Program<Anchor>(idl as Anchor, provider);
-
-    // Generate the PDA for the score account
     const [scoreAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(key)],
       programId
     );
 
-    // Call the initialize function in the Solana program
-    await program.methods
-      .initialize(new anchor.BN(score), key)
-      .accounts({
-        scoreAccount: scoreAccount,
-        user: publicKey as PublicKey,
-        systemProgram: web3.SystemProgram.programId,
-      })
-      .rpc();
+    try {
+      // Try to fetch the account
+      const account = await program.account.scoreAccount.fetch(scoreAccount);
+      console.log(account);
 
-    console.log(`Score sent to Solana account: ${scoreAccount.toBase58()}`);
+      // Check if the username in the account matches the GitHub username
+      if (account.username === username) {
+        // If the account exists and the username matches, update the score
+        const tx = await program.methods
+          .update(new anchor.BN(score), key)
+          .accounts({
+            scoreAccount: scoreAccount,
+            user: publicKey as PublicKey,
+            systemProgram: web3.SystemProgram.programId,
+          })
+          .rpc();
+
+        if (tx) {
+          setUpdate(true);
+        }
+        return;
+      }
+
+      if (account.username !== null) {
+        console.log("Score already exists for this key");
+        setError("Score already exists for this key. Choose a different key.");
+        return;
+      }
+    } catch (error) {
+      if (error.message.includes("Account does not exist")) {
+        // Handle the case where the account doesn't exist yet
+        console.log("Account doesn't exist, creating a new one...");
+
+        // Create a new account
+        await program.methods
+          .initialize(username, new anchor.BN(score), key)
+          .accounts({
+            scoreAccount: scoreAccount,
+            user: publicKey as PublicKey,
+            systemProgram: web3.SystemProgram.programId,
+          })
+          .rpc();
+
+        console.log(`Score sent to Solana account: ${scoreAccount.toBase58()}`);
+      } else {
+        // Handle other errors (e.g., network or transaction errors)
+        console.error("Error fetching account:", error);
+      }
+    }
   };
 
   return (
@@ -128,6 +166,13 @@ function Save() {
             />
           </div>
         )}
+        {update && (
+          <div className="text-green-500 text-center py-5">
+            Updated your score successfully!
+          </div>
+        )}
+
+        {error && <div className="text-red-500 text-center py-5">{error}</div>}
       </motion.div>
     </AuroraBackground>
   );

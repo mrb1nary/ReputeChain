@@ -12,8 +12,13 @@ pub mod anchor {
 
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>, score: u64, key: String) -> Result<()> {
-        instructions::initialize(ctx, score, key)
+    pub fn initialize(
+        ctx: Context<Initialize>,
+        username: String,
+        score: u64,
+        key: String,
+    ) -> Result<()> {
+        instructions::initialize(ctx, username, score, key)
     }
 
     pub fn update(ctx: Context<UpdateScore>, new_score: u64, key: String) -> Result<()> {

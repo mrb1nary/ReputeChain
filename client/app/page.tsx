@@ -1,7 +1,17 @@
 "use client";
 
 import Hero from "./Hero";
+import Navbar from "./Navbar";
+import { useSolanaWallet } from "./WalletProvider";
 
 export default function Home() {
-  return <Hero />;
+  const WalletProvider = useSolanaWallet();
+  return (
+    <>
+      <WalletProvider>
+        <Hero />;
+        <Navbar />
+      </WalletProvider>
+    </>
+  );
 }
