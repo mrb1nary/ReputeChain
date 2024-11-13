@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::ScoreAccount;
 
 #[derive(Accounts)]
-#[instruction(key:String)]
+#[instruction(score: u64, key:String)]
 pub struct Initialize<'info> {
     #[account(init, payer = user, space = 8 + 64, seeds = [key.as_bytes()], bump)]
     pub score_account: Account<'info, ScoreAccount>,
