@@ -74,23 +74,23 @@ function Hero() {
   }
 
   return (
-    <div className="min-h-screen w-full rounded-md flex flex-col md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden px-4 sm:px-6 md:px-8">
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
         fill="white"
       />
-      <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
-        <h1 className="md:text-7xl sm:text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-orange-200 to-orange-500 bg-opacity-50">
+      <div className="max-w-7xl mx-auto relative z-10 w-full pt-20 md:pt-0 text-center">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-orange-200 to-orange-500">
           ReputeChain
         </h1>
 
-        <p className="mt-4 font-bold text-neutral-300 max-w-lg text-center mx-auto">
+        <p className="mt-4 font-bold text-neutral-300 max-w-lg mx-auto">
           Decentralized reputation system built on the Solana blockchain,
           designed to measure and verify a user&apos;s contributions and
           credibility to the community
         </p>
       </div>
-      <button className="bg-slate-800 mb-10 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-1 text-sm font-semibold leading-7 text-white inline-block mt-4">
+      <button className="bg-slate-800 mb-10 group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-1 text-sm font-semibold text-white inline-block mt-4">
         <span className="absolute inset-0 overflow-hidden rounded-full">
           <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
         </span>
@@ -114,21 +114,19 @@ function Hero() {
         </div>
         <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40"></span>
       </button>
-      <div>
+
+      <div className="w-full max-w-md mx-auto">
         <PlaceholdersAndVanishInput
           placeholders={placeholders}
           onChange={handleChange}
           onSubmit={handleSubmit}
         />
       </div>
-      {username && (
-        <div className="text-white text-center mt-4">User: {username}</div>
-      )}
-      {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+
+      {username && <div className="text-white mt-4">User: {username}</div>}
+      {error && <div className="text-red-500 mt-4">{error}</div>}
       {score !== null && (
-        <div className="text-white text-center mt-4">
-          Score is: {score.toString()}
-        </div>
+        <div className="text-white mt-4">Score is: {score.toString()}</div>
       )}
     </div>
   );

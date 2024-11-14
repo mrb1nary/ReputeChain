@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import * as anchor from "@coral-xyz/anchor";
 import { Program, AnchorProvider, web3 } from "@coral-xyz/anchor";
-// import idl from "../anchor.json";
-import idl from "../../../anchor/target/idl/anchor.json";
-// import { Anchor } from "../anchor";
-import { Anchor } from "../../../anchor/target/types/anchor";
+import idl from "../anchor.json";
+import { Anchor } from "../anchor";
 import { PublicKey, Connection, clusterApiUrl } from "@solana/web3.js";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
@@ -106,14 +105,16 @@ function Save() {
         return;
       }
     } catch (error) {
-      if (error.message.includes("Account does not exist")) {
+      if (error instanceof Error && error.message.includes("Account does not exist")) {
         // Handle the case where the account doesn't exist yet
         console.log("Account doesn't exist, creating a new one...");
 
         // Create a new account
         await program.methods
+          //@ts-ignore
           .initialize(username, new anchor.BN(score), key)
           .accounts({
+            //@ts-ignore
             scoreAccount: scoreAccount,
             user: publicKey as PublicKey,
             systemProgram: web3.SystemProgram.programId,
@@ -122,7 +123,6 @@ function Save() {
 
         console.log(`Score sent to Solana account: ${scoreAccount.toBase58()}`);
       } else {
-        // Handle other errors (e.g., network or transaction errors)
         console.error("Error fetching account:", error);
       }
     }

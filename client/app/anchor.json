@@ -44,6 +44,10 @@
       ],
       "args": [
         {
+          "name": "username",
+          "type": "string"
+        },
+        {
           "name": "score",
           "type": "u64"
         },
@@ -126,6 +130,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "username",
+            "type": "string"
+          },
           {
             "name": "authority",
             "type": "pubkey"

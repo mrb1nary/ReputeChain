@@ -1,12 +1,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Home, Menu, MessageSquare, Plus, Settings, Users } from "lucide-react";
+import { Home } from "lucide-react";
 import { SiGithub } from "react-icons/si";
 import { useRouter } from "next/navigation";
 import { BsLinkedin, BsTwitter } from "react-icons/bs";

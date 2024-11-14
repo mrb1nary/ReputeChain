@@ -223,9 +223,11 @@ function Calculate() {
         </motion.div>
 
         {score !== null && (
-          <div className="mt-6 text-xl md:text-2xl font-semibold text-white text-center">
-            User Score: {score}
-          </div>
+          <>
+            <div className="mt-1 text-xl md:text-2xl font-semibold text-white text-center">
+              User Score: {score} / 1000
+            </div>
+          </>
         )}
 
         {githubStats && (
@@ -233,7 +235,6 @@ function Calculate() {
             <HoverEffect
               className="flex flex-wrap justify-center gap-6"
               items={hoverEffectItems}
-              key={hoverEffectItems.map((item) => item.key).join("")}
             />
           </div>
         )}
@@ -270,7 +271,7 @@ function Calculate() {
 
         <div className="text-3xl sm:text-4xl md:text-5xl font-bold mt-[200px] mb-[200px] text-white text-center">
           <h3>✨ Score Calculation Recipe ✨</h3>
-          <div className="text-base sm:text-lg md:text-xl font-light mt-6 max-w-2xl mx-auto text-neutral-200 text-left space-y-6">
+          <div className="text-base sm:text-lg md:text-xl font-light mt-6 max-w-2xl mx-auto text-neutral-200 text-left space-y-6 px-4 sm:px-8">
             <p className="pb-4">
               The score is calculated based on various factors that reflect your
               GitHub contributions and reputation. Here’s how each factor

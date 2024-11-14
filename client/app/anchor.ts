@@ -50,6 +50,10 @@ export type Anchor = {
       ],
       "args": [
         {
+          "name": "username",
+          "type": "string"
+        },
+        {
           "name": "score",
           "type": "u64"
         },
@@ -132,6 +136,10 @@ export type Anchor = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "username",
+            "type": "string"
+          },
           {
             "name": "authority",
             "type": "pubkey"
