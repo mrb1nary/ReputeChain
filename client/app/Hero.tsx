@@ -1,9 +1,9 @@
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Spotlight } from "@/components/ui/spotlight";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
-import idl from "../../anchor/target/idl/anchor.json"; // Adjust the path if needed
+import idl from "./anchor.json";
 import { AnchorProvider, Program, web3 } from "@coral-xyz/anchor";
-import { Anchor } from "../../anchor/target/types/anchor";
+import { Anchor } from "./anchor";
 import React, { useState } from "react";
 import { useWallet, WalletContextState } from "@solana/wallet-adapter-react";
 
