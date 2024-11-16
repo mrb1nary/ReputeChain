@@ -5,7 +5,7 @@ ReputeChain is a decentralized social reputation system that calculates and stor
 
 ![Screenshot From 2024-11-14 20-22-08](https://github.com/user-attachments/assets/39162a75-3409-43e9-8d58-5d906eefc75e)
 
-**Live Demo**: [ReputeChain - Live Demo](https://repute-chain-mo3enxquo-mrb1narys-projects.vercel.app/)
+**Live Demo**: [ReputeChain - Live Demo](https://repute-chain.vercel.app/)
 
 ## 🌟 Features
 
