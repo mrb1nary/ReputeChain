@@ -75,7 +75,6 @@ ReputeChain is a decentralized social reputation system that calculates and stor
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js, Tailwind CSS, React
-- **Backend**: Node.js, Express.js
 - **Blockchain**: Solana, Anchor
 - **Data Sources**: GitHub API for retrieving user metrics
 
